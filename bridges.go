@@ -21,6 +21,7 @@ import (
 	"errors"
 	"feriapp-backend-go/bridges"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -62,7 +63,7 @@ func createBridges() func(w http.ResponseWriter, req *http.Request) {
 
 func bridgesByYears(date time.Time) bridges.YearBridges {
 	return bridges.YearBridges{
-		Years:         []string{"2019"},
+		Years:         []string{strconv.FormatInt(int64(date.Year()), 10)},
 		Bridges:       []bridges.Bridge{},
 		HolidaysCount: 6,
 		WeekdaysCount: 4,

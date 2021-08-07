@@ -7,7 +7,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/require"
@@ -19,9 +21,9 @@ func TestBridgesRoutes(testCase *testing.T) {
 
 	testCase.Run("/bridges - ok", func(t *testing.T) {
 		bridgesArray := []bridges.Bridge{}
-
+		currentYear := time.Now().UTC().Year()
 		YearBridges := []bridges.YearBridges{{
-			Years:         []string{"2019"},
+			Years:         []string{strconv.FormatInt(int64(currentYear), 10)},
 			Bridges:       bridgesArray,
 			HolidaysCount: 6,
 			WeekdaysCount: 4,
