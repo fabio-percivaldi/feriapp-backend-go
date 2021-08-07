@@ -52,6 +52,9 @@ func createBridges() func(w http.ResponseWriter, req *http.Request) {
 		}
 
 		logger := glogger.Get(req.Context())
+		if requestBody.YearsScope == 0 {
+			requestBody.YearsScope = 1
+		}
 		for i := 0; i < requestBody.YearsScope; i++ {
 			currentYear := time.Now().UTC()
 			responseBody = append(responseBody, bridgesByYears(currentYear.AddDate(i, 0, 0)))
