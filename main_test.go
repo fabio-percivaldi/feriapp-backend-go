@@ -42,26 +42,7 @@ func TestEntryPoint(t *testing.T) {
 
 		time.Sleep(1 * time.Second)
 
-		resp, err := http.DefaultClient.Get("http://localhost:3000/bridges")
-		require.Equal(t, nil, err)
-		require.Equal(t, 200, resp.StatusCode)
-	})
-
-	t.Run("sets correct path prefix", func(t *testing.T) {
-		shutdown := make(chan os.Signal, 1)
-
-		os.Setenv("SERVICE_PREFIX", "/prefix")
-		go func() {
-			entrypoint(shutdown)
-		}()
-		defer func() {
-			os.Unsetenv("SERVICE_PREFIX")
-			shutdown <- syscall.SIGTERM
-		}()
-
-		time.Sleep(1 * time.Second)
-
-		resp, err := http.DefaultClient.Get("http://localhost:8080/prefix/bridges")
+		resp, err := http.DefaultClient.Get("http://localhost:3000/-/healthz")
 		require.Equal(t, nil, err)
 		require.Equal(t, 200, resp.StatusCode)
 	})

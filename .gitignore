@@ -3,4 +3,5 @@
 .vscode
 *.env
 *.log*
+!default.env
 feriapp-backend-go
