@@ -21,7 +21,6 @@ import (
 	"errors"
 	"feriapp-backend-go/bridges"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/mia-platform/glogger"
@@ -40,12 +39,29 @@ func setupBridgesRouter(router *mux.Router) {
 
 func createBridges() func(w http.ResponseWriter, req *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
-		logger := glogger.Get(req.Context())
+		var requestBody bridges.BridgesRequest
+		responseBody := [1]bridges.BridgesResponse{
+			{
+				Years:         []string{"2019"},
+				HolidaysCount: 6,
+				WeekdaysCount: 4,
+				DaysCount:     10,
+			},
+		}
 
-		writeResponse(logger, w, 200, [2]bridges.Bridge{
-			{Start: time.Date(2019, 12, 21, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 12, 26, 0, 0, 0, 0, time.UTC), HolidaysCount: 4, WeekdaysCount: 2, DaysCount: 6},
-			{Start: time.Date(2019, 12, 25, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 12, 29, 0, 0, 0, 0, time.UTC), HolidaysCount: 4, WeekdaysCount: 1, DaysCount: 5},
-		})
+		err := json.NewDecoder(req.Body).Decode(&requestBody)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		logger := glogger.Get(req.Context())
+		for i := 0; i < requestBody.DayOfHolidays; i++ {
+			responseBody[0].Bridges = append(responseBody[0].Bridges, bridges.Bridge{})
+		}
+
+		writeResponse(logger, w, 200, responseBody)
 	}
 }
 
