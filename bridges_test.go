@@ -144,4 +144,32 @@ func TestBridgesByYear(testCase *testing.T) {
 		require.Equal(t, string(expectedResponse), string(actualResponse), "The 2019 bridges should be 2")
 	})
 
+	testCase.Run("bridgesByYear - max availability = 0", func(t *testing.T) {
+		bridgesArray := []bridges.Bridge{
+			{Start: time.Date(2019, 11, 1, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 11, 3, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 0, DaysCount: 3},
+		}
+		YearBridges := bridges.YearBridges{
+			Years:         []string{"2019"},
+			Bridges:       bridgesArray,
+			HolidaysCount: 6,
+			WeekdaysCount: 4,
+			DaysCount:     10,
+		}
+
+		expectedResponse, _ := json.Marshal(YearBridges)
+
+		result, err := bridgesByYear(
+			time.Date(2019, 1, 1, 0, 0, 0, 0, time.UTC),
+			4,
+			0,
+			"Milan",
+			[]int{0, 6},
+		)
+
+		require.Equal(t, nil, err)
+
+		actualResponse, _ := json.Marshal(result)
+		require.Equal(t, string(expectedResponse), string(actualResponse), "The 2019 bridges should be 2")
+	})
+
 }

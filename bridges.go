@@ -89,11 +89,17 @@ func bridgesByYear(date time.Time, maxHolidaysDistance int, maxAvailability int,
 
 	var scoreMap = map[int][]bridges.Bridge{}
 	var topBridges, goodBridges int
+	var calculatedBridges []bridges.Bridge
 
-	for {
+	for !currentDate.UTC().Equal(time.Date(date.Year(), 12, 31, 0, 0, 0, 0, time.UTC)) {
 		isCurrentDateHolidays := helpers.IsHolidays(currentDate, daysOffMap, "IT", city)
 
 		availableDays := (map[bool]int{true: maxAvailability, false: maxAvailability - 1})[isCurrentDateHolidays]
+		if maxAvailability == 0 && !isCurrentDateHolidays {
+			currentDate = currentDate.AddDate(0, 0, 1)
+			continue
+		}
+
 		currentBridge := bridges.Bridge{
 			Start:         currentDate,
 			End:           currentDate,
@@ -121,25 +127,25 @@ func bridgesByYear(date time.Time, maxHolidaysDistance int, maxAvailability int,
 		score := getBridgeScore(currentBridge)
 
 		scoreMap[int(score)] = append(scoreMap[int(score)], currentBridge)
-
-		if currentDate.UTC().Equal(time.Date(date.Year(), 12, 31, 0, 0, 0, 0, time.UTC)) {
-			topBridges = 0
-			goodBridges = 0
-			for k := range scoreMap {
-				if k > topBridges {
-					goodBridges = topBridges
-					topBridges = k
-				} else {
-					if k > goodBridges {
-						goodBridges = k
-					}
-				}
+	}
+	topBridges = 0
+	goodBridges = 0
+	for k := range scoreMap {
+		if k > topBridges {
+			goodBridges = topBridges
+			topBridges = k
+		} else {
+			if k > goodBridges {
+				goodBridges = k
 			}
-			break
 		}
 	}
+	if maxAvailability == 0 {
+		calculatedBridges = scoreMap[topBridges]
+	} else {
+		calculatedBridges = append(scoreMap[topBridges], scoreMap[goodBridges]...)
 
-	calculatedBridges := append(scoreMap[topBridges], scoreMap[goodBridges]...)
+	}
 	return bridges.YearBridges{
 		Years:         []string{strconv.FormatInt(int64(date.Year()), 10)},
 		Bridges:       calculatedBridges,
@@ -150,6 +156,9 @@ func bridgesByYear(date time.Time, maxHolidaysDistance int, maxAvailability int,
 }
 
 func getBridgeScore(bridge bridges.Bridge) float32 {
+	if bridge.WeekdaysCount == 0 {
+		return float32(bridge.DaysCount)
+	}
 	return (float32(bridge.DaysCount) / (float32(bridge.WeekdaysCount)) * (float32(bridge.DaysCount) / 30.0) * 100)
 }
 
