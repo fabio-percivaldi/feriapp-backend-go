@@ -17,12 +17,13 @@
 package main
 
 import (
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"os"
 	"syscall"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestEntryPoint(t *testing.T) {
@@ -41,7 +42,7 @@ func TestEntryPoint(t *testing.T) {
 
 		time.Sleep(1 * time.Second)
 
-		resp, err := http.DefaultClient.Get("http://localhost:3000/")
+		resp, err := http.DefaultClient.Get("http://localhost:3000/bridges")
 		require.Equal(t, nil, err)
 		require.Equal(t, 200, resp.StatusCode)
 	})
@@ -60,7 +61,7 @@ func TestEntryPoint(t *testing.T) {
 
 		time.Sleep(1 * time.Second)
 
-		resp, err := http.DefaultClient.Get("http://localhost:8080/prefix/")
+		resp, err := http.DefaultClient.Get("http://localhost:8080/prefix/bridges")
 		require.Equal(t, nil, err)
 		require.Equal(t, 200, resp.StatusCode)
 	})

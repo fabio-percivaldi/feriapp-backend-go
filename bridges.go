@@ -22,8 +22,9 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func setupRouter(router *mux.Router) {
+func setupBridgesRouter(router *mux.Router) {
 	// Setup your routes here.
-	router.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+	router.HandleFunc("/bridges", func(w http.ResponseWriter, req *http.Request) {
+		w.Write([]byte("Hello Fabio"))
 	})
 }
