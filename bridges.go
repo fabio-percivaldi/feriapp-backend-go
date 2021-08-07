@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"errors"
 	"feriapp-backend-go/bridges"
+	"feriapp-backend-go/helpers"
 	"net/http"
 	"strconv"
 	"time"
@@ -41,10 +42,10 @@ func setupBridgesRouter(router *mux.Router) {
 
 func createBridges() func(w http.ResponseWriter, req *http.Request) {
 	return func(w http.ResponseWriter, req *http.Request) {
-		var requestBody bridges.BridgesRequest
+		var reqBody bridges.BridgesRequest
 		var responseBody []bridges.YearBridges
 
-		err := json.NewDecoder(req.Body).Decode(&requestBody)
+		err := json.NewDecoder(req.Body).Decode(&reqBody)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -52,26 +53,104 @@ func createBridges() func(w http.ResponseWriter, req *http.Request) {
 		}
 
 		logger := glogger.Get(req.Context())
-		if requestBody.YearsScope == 0 {
-			requestBody.YearsScope = 1
+
+		if reqBody.YearsScope == 0 {
+			reqBody.YearsScope = 3
 		}
-		for i := 0; i < requestBody.YearsScope; i++ {
+		for i := 0; i < reqBody.YearsScope; i++ {
 			currentYear := time.Now().UTC()
-			responseBody = append(responseBody, bridgesByYears(currentYear.AddDate(i, 0, 0)))
+			yearBridges, err := bridgesByYear(
+				currentYear.AddDate(i, 0, 0),
+				4,
+				reqBody.DayOfHolidays,
+				reqBody.City,
+				reqBody.DaysOff,
+			)
+
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			responseBody = append(responseBody, yearBridges)
 		}
 
 		writeResponse(logger, w, 200, responseBody)
 	}
 }
 
-func bridgesByYears(date time.Time) bridges.YearBridges {
+func bridgesByYear(date time.Time, maxHolidaysDistance int, maxAvailability int, city string, daysOff []int) (bridges.YearBridges, error) {
+	var daysOffMap = make(map[int]bool)
+	for i := 0; i < len(daysOff); i += 1 {
+		daysOffMap[daysOff[i]] = true
+	}
+	startDate := time.Date(date.Year(), 1, 1, 0, 0, 0, 0, time.UTC)
+	var currentDate = startDate
+	helpers.IsHolidays(currentDate, daysOffMap, "IT", city)
+
+	var scoreMap = map[int][]bridges.Bridge{}
+	var topBridges, goodBridges int
+
+	for {
+		isCurrentDateHolidays := helpers.IsHolidays(currentDate, daysOffMap, "IT", city)
+
+		availableDays := (map[bool]int{true: maxAvailability, false: maxAvailability - 1})[isCurrentDateHolidays]
+		currentBridge := bridges.Bridge{
+			Start:         currentDate,
+			End:           currentDate,
+			HolidaysCount: (map[bool]int{true: 1, false: 0})[isCurrentDateHolidays],
+			WeekdaysCount: (map[bool]int{true: 0, false: 1})[isCurrentDateHolidays],
+			DaysCount:     1,
+		}
+		nextDate := currentDate
+
+		for availableDays > 0 || helpers.IsHolidays(nextDate.AddDate(0, 0, 1), daysOffMap, "IT", city) {
+			nextDate = nextDate.AddDate(0, 0, 1)
+			isNextDateHolidays := helpers.IsHolidays(nextDate, daysOffMap, "IT", city)
+
+			if isNextDateHolidays {
+				currentBridge.HolidaysCount++
+			} else {
+				currentBridge.WeekdaysCount++
+				availableDays -= 1
+			}
+			currentBridge.End = nextDate
+			currentBridge.DaysCount++
+		}
+		currentDate = currentDate.AddDate(0, 0, 1)
+
+		score := getBridgeScore(currentBridge)
+
+		scoreMap[int(score)] = append(scoreMap[int(score)], currentBridge)
+
+		if currentDate.UTC().Equal(time.Date(date.Year(), 12, 31, 0, 0, 0, 0, time.UTC)) {
+			topBridges = 0
+			goodBridges = 0
+			for k := range scoreMap {
+				if k > topBridges {
+					goodBridges = topBridges
+					topBridges = k
+				} else {
+					if k > goodBridges {
+						goodBridges = k
+					}
+				}
+			}
+			break
+		}
+	}
+
+	calculatedBridges := append(scoreMap[topBridges], scoreMap[goodBridges]...)
 	return bridges.YearBridges{
 		Years:         []string{strconv.FormatInt(int64(date.Year()), 10)},
-		Bridges:       []bridges.Bridge{},
+		Bridges:       calculatedBridges,
 		HolidaysCount: 6,
 		WeekdaysCount: 4,
 		DaysCount:     10,
-	}
+	}, nil
+}
+
+func getBridgeScore(bridge bridges.Bridge) float32 {
+	return (float32(bridge.DaysCount) / (float32(bridge.WeekdaysCount)) * (float32(bridge.DaysCount) / 30.0) * 100)
 }
 
 func writeResponse(logger *logrus.Entry, w http.ResponseWriter, statusCode int, response interface{}) {
