@@ -21,6 +21,7 @@ import (
 	"errors"
 	"feriapp-backend-go/bridges"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/mia-platform/glogger"
@@ -37,7 +38,10 @@ func setupBridgesRouter(router *mux.Router) {
 	router.HandleFunc("/bridges", func(w http.ResponseWriter, req *http.Request) {
 		logger := glogger.Get(req.Context())
 
-		writeResponse(logger, w, 200, [0]bridges.Bridge{})
+		writeResponse(logger, w, 200, [2]bridges.Bridge{
+			{Start: time.Date(2019, 12, 21, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 12, 26, 0, 0, 0, 0, time.UTC), HolidaysCount: 4, WeekdaysCount: 2, DaysCount: 6},
+			{Start: time.Date(2019, 12, 25, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 12, 29, 0, 0, 0, 0, time.UTC), HolidaysCount: 4, WeekdaysCount: 1, DaysCount: 5},
+		})
 	})
 }
 
