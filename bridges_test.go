@@ -18,12 +18,9 @@ func TestBridgesRoutes(testCase *testing.T) {
 	setupBridgesRouter(testRouter)
 
 	testCase.Run("/bridges - ok", func(t *testing.T) {
-		bridgesArray := []bridges.Bridge{
-			{},
-			{},
-		}
+		bridgesArray := []bridges.Bridge{}
 
-		bridgesResponse := []bridges.BridgesResponse{{
+		YearBridges := []bridges.YearBridges{{
 			Years:         []string{"2019"},
 			Bridges:       bridgesArray,
 			HolidaysCount: 6,
@@ -31,7 +28,7 @@ func TestBridgesRoutes(testCase *testing.T) {
 			DaysCount:     10,
 		}}
 
-		expectedResponse, _ := json.Marshal(bridgesResponse)
+		expectedResponse, _ := json.Marshal(YearBridges)
 
 		responseRecorder := httptest.NewRecorder()
 
@@ -40,6 +37,7 @@ func TestBridgesRoutes(testCase *testing.T) {
 			CustomHolidays: []bridges.CustomHolidays{},
 			City:           "Milan",
 			DaysOff:        []int{0, 6},
+			YearsScope:     1,
 		})
 
 		request, requestError := http.NewRequest(http.MethodPost, "/bridges", bytes.NewBuffer(requestBody))

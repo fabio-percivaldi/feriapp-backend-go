@@ -10,7 +10,7 @@ type Bridge struct {
 	DaysCount     int       `json:"daysCount" bson:"daysCount"`
 }
 
-type BridgesResponse struct {
+type YearBridges struct {
 	Years         []string `json:"years" bson:"years"`
 	Bridges       []Bridge `json:"bridges" bson:"bridges"`
 	HolidaysCount int      `json:"holidaysCount" bson:"holidaysCount"`
@@ -22,6 +22,7 @@ type BridgesRequest struct {
 	CustomHolidays []CustomHolidays `json:"customHolidays" bson:"customHolidays"`
 	City           string           `json:"city" bson:"city"`
 	DaysOff        []int            `json:"daysOff" bson:"daysOff"`
+	YearsScope     int              `json:"yearsScope" bson:"yearsScope"`
 }
 
 type CustomHolidays struct {
