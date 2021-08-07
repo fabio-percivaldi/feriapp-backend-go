@@ -17,14 +17,38 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
+	"feriapp-backend-go/bridges"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/mia-platform/glogger"
+	"github.com/sirupsen/logrus"
+)
+
+var (
+	errGeneric = errors.New("internal Server Error")
+	// errBadRequest = errors.New("bad Request")
 )
 
 func setupBridgesRouter(router *mux.Router) {
 	// Setup your routes here.
 	router.HandleFunc("/bridges", func(w http.ResponseWriter, req *http.Request) {
-		w.Write([]byte("Hello Fabio"))
+		logger := glogger.Get(req.Context())
+
+		writeResponse(logger, w, 200, [0]bridges.Bridge{})
 	})
+}
+
+func writeResponse(logger *logrus.Entry, w http.ResponseWriter, statusCode int, response interface{}) {
+	responseBody, err := json.Marshal(response)
+	if err != nil {
+		logger.WithError(err).Error("failed response unmarshalling")
+		http.Error(w, errGeneric.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	w.Write(responseBody)
 }
