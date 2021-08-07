@@ -35,14 +35,18 @@ var (
 
 func setupBridgesRouter(router *mux.Router) {
 	// Setup your routes here.
-	router.HandleFunc("/bridges", func(w http.ResponseWriter, req *http.Request) {
+	router.HandleFunc("/bridges", createBridges()).Methods(http.MethodPost)
+}
+
+func createBridges() func(w http.ResponseWriter, req *http.Request) {
+	return func(w http.ResponseWriter, req *http.Request) {
 		logger := glogger.Get(req.Context())
 
 		writeResponse(logger, w, 200, [2]bridges.Bridge{
 			{Start: time.Date(2019, 12, 21, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 12, 26, 0, 0, 0, 0, time.UTC), HolidaysCount: 4, WeekdaysCount: 2, DaysCount: 6},
 			{Start: time.Date(2019, 12, 25, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 12, 29, 0, 0, 0, 0, time.UTC), HolidaysCount: 4, WeekdaysCount: 1, DaysCount: 5},
 		})
-	})
+	}
 }
 
 func writeResponse(logger *logrus.Entry, w http.ResponseWriter, statusCode int, response interface{}) {

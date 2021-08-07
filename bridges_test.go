@@ -27,7 +27,7 @@ func TestBridgesRoutes(testCase *testing.T) {
 		expectedResponse, _ := json.Marshal(bridgesArray)
 
 		responseRecorder := httptest.NewRecorder()
-		request, requestError := http.NewRequest(http.MethodGet, "/bridges", nil)
+		request, requestError := http.NewRequest(http.MethodPost, "/bridges", nil)
 		require.NoError(t, requestError, "Error creating the /bridges request")
 
 		testRouter.ServeHTTP(responseRecorder, request)
