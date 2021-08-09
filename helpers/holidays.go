@@ -62,13 +62,12 @@ func getHolidays(year int, locale string, city string) []time.Time {
 		fmt.Println("error parsing local city holiday month")
 		return holidays
 	}
-	day, dayErr := strconv.Atoi(splittedDate[0])
+	day, dayErr := strconv.Atoi(splittedDate[1])
 	if dayErr != nil {
 		fmt.Println("error parsing local city holiday day")
 		return holidays
 	}
 	localCityHolidayDate := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
-	fmt.Printf("bridges %v", localCityHolidayDate)
 
 	return append(holidays, localCityHolidayDate.UTC())
 }
