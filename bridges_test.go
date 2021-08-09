@@ -24,7 +24,7 @@ func TestBridgesRoutes(testCase *testing.T) {
 		requestBody, _ := json.Marshal(bridges.BridgesRequest{
 			DayOfHolidays:  2,
 			CustomHolidays: []bridges.CustomHolidays{},
-			City:           "Milan",
+			City:           "Milano",
 			DaysOff:        []int{0, 6},
 			YearsScope:     1,
 		})
@@ -51,7 +51,7 @@ func TestBridgesRoutes(testCase *testing.T) {
 		requestBody, _ := json.Marshal(bridges.BridgesRequest{
 			DayOfHolidays:  2,
 			CustomHolidays: []bridges.CustomHolidays{},
-			City:           "Milan",
+			City:           "Milano",
 			DaysOff:        []int{0, 6},
 		})
 
@@ -78,7 +78,7 @@ func TestBridgesRoutes(testCase *testing.T) {
 		requestBody, _ := json.Marshal(bridges.BridgesRequest{
 			DayOfHolidays:  2,
 			CustomHolidays: []bridges.CustomHolidays{},
-			City:           "Milan",
+			City:           "Milano",
 			DaysOff:        []int{0, 6},
 			YearsScope:     2,
 		})
@@ -116,6 +116,8 @@ func TestBridgesByYear(testCase *testing.T) {
 			{Start: time.Date(2019, 10, 30, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 11, 3, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
 			{Start: time.Date(2019, 10, 31, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 11, 4, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
 			{Start: time.Date(2019, 11, 1, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 11, 5, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
+			{Start: time.Date(2019, 12, 11, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 12, 15, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
+			{Start: time.Date(2019, 12, 12, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 12, 16, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
 			{Start: time.Date(2019, 12, 22, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 12, 26, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
 			{Start: time.Date(2019, 12, 26, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 12, 30, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
 			{Start: time.Date(2019, 12, 28, 0, 0, 0, 0, time.UTC), End: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
@@ -134,14 +136,14 @@ func TestBridgesByYear(testCase *testing.T) {
 			time.Date(2019, 1, 1, 0, 0, 0, 0, time.UTC),
 			4,
 			2,
-			"Milan",
+			"Milano",
 			[]int{0, 6},
 		)
 
 		require.Equal(t, nil, err)
 
 		actualResponse, _ := json.Marshal(result)
-		require.Equal(t, string(expectedResponse), string(actualResponse), "The 2019 bridges should be 2")
+		require.Equal(t, string(expectedResponse), string(actualResponse), "The 2019 bridges should be correctly calculated")
 	})
 
 	testCase.Run("bridgesByYear - max availability = 0", func(t *testing.T) {
@@ -162,7 +164,7 @@ func TestBridgesByYear(testCase *testing.T) {
 			time.Date(2019, 1, 1, 0, 0, 0, 0, time.UTC),
 			4,
 			0,
-			"Milan",
+			"Milano",
 			[]int{0, 6},
 		)
 
@@ -172,4 +174,32 @@ func TestBridgesByYear(testCase *testing.T) {
 		require.Equal(t, string(expectedResponse), string(actualResponse), "The 2019 bridges should be 2")
 	})
 
+	// testCase.Run("bridgesByYear - local city holiday - milano", func(t *testing.T) {
+	// 	expectedBridge := bridges.Bridge{
+	// 		Start:         time.Date(2020, 12, 5, 0, 0, 0, 0, time.UTC),
+	// 		End:           time.Date(2020, 12, 7, 0, 0, 0, 0, time.UTC),
+	// 		HolidaysCount: 3,
+	// 		WeekdaysCount: 0,
+	// 		DaysCount:     3,
+	// 	}
+
+	// 	result, err := bridgesByYear(
+	// 		time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+	// 		4,
+	// 		0,
+	// 		"Milano",
+	// 		[]int{0, 6},
+	// 	)
+	// 	fmt.Printf("bridges %v", result)
+	// 	require.Equal(t, nil, err)
+	// 	var foundBridge = false
+
+	// 	for _, bridge := range result.Bridges {
+	// 		if bridge.Start.Equal(expectedBridge.Start) && bridge.End.Equal(expectedBridge.End) {
+	// 			foundBridge = true
+	// 		}
+	// 	}
+
+	// 	require.Equal(t, true, foundBridge, "In 2020 bridges there should be san Ambrogio bridge")
+	// })
 }

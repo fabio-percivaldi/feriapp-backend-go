@@ -5,13 +5,17 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 )
 
-func IsHolidays(date time.Time, daysOffMap map[int]bool, locale string, city string) bool {
-	holidays := getHolidays(date.Year(), locale, city)
+func HolidaysUtils(year int, daysOffMap map[int]bool, locale string, city string) func(date time.Time) bool {
+	holidays := getHolidays(year, locale, city)
 
-	return daysOffMap[int(date.Weekday())] || isCurrentDateAnHolidays(date, holidays)
+	return func(date time.Time) bool {
+		return daysOffMap[int(date.Weekday())] || isCurrentDateAnHolidays(date, holidays)
+	}
 }
 
 func isCurrentDateAnHolidays(date time.Time, holidays []time.Time) bool {
@@ -34,6 +38,7 @@ func getHolidays(year int, locale string, city string) []time.Time {
 			localCityHoliday = localHoliday
 		}
 	}
+
 	switch locale {
 	case "IT":
 		holidays = []time.Time{
@@ -51,12 +56,25 @@ func getHolidays(year int, locale string, city string) []time.Time {
 	default:
 		return []time.Time{}
 	}
-	return append(holidays, localCityHoliday.Date.UTC())
+	splittedDate := strings.Split(localCityHoliday.Date, "-")
+	month, montErr := strconv.Atoi(splittedDate[0])
+	if montErr != nil {
+		fmt.Println("error parsing local city holiday month")
+		return holidays
+	}
+	day, dayErr := strconv.Atoi(splittedDate[0])
+	if dayErr != nil {
+		fmt.Println("error parsing local city holiday day")
+		return holidays
+	}
+	localCityHolidayDate := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
+	fmt.Printf("bridges %v", localCityHolidayDate)
+
+	return append(holidays, localCityHolidayDate.UTC())
 }
 
 func readFile(locale string) []Holiday {
 	jsonFile, err := os.Open(fmt.Sprintf("%shelpers/%s.json", os.Getenv("LANGUAGE_PACK_FILE_PATH"), locale))
-	fmt.Printf("|||||||||||| %v", jsonFile.Name())
 	// if we os.Open returns an error then handle it
 	if err != nil {
 		fmt.Println(err)
@@ -74,9 +92,9 @@ func readFile(locale string) []Holiday {
 }
 
 type Holiday struct {
-	City     string    `json:"city" bson:"city"`
-	Name     string    `json:"name" bson:"name"`
-	Date     time.Time `json:"date" bson:"date"`
-	Region   string    `json:"region" bson:"region"`
-	Province string    `json:"province" bson:"daysCount"`
+	City     string `json:"city" bson:"city"`
+	Name     string `json:"name" bson:"name"`
+	Date     string `json:"date" bson:"date"`
+	Region   string `json:"region" bson:"region"`
+	Province string `json:"province" bson:"daysCount"`
 }

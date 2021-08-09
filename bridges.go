@@ -37,45 +37,43 @@ var (
 
 func setupBridgesRouter(router *mux.Router) {
 	// Setup your routes here.
-	router.HandleFunc("/bridges", createBridges()).Methods(http.MethodPost)
+	router.HandleFunc("/bridges", createBridges).Methods(http.MethodPost)
 }
 
-func createBridges() func(w http.ResponseWriter, req *http.Request) {
-	return func(w http.ResponseWriter, req *http.Request) {
-		var reqBody bridges.BridgesRequest
-		var responseBody []bridges.YearBridges
+func createBridges(w http.ResponseWriter, req *http.Request) {
+	var reqBody bridges.BridgesRequest
+	var responseBody []bridges.YearBridges
 
-		err := json.NewDecoder(req.Body).Decode(&reqBody)
+	err := json.NewDecoder(req.Body).Decode(&reqBody)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	logger := glogger.Get(req.Context())
+
+	if reqBody.YearsScope == 0 {
+		reqBody.YearsScope = 3
+	}
+	for i := 0; i < reqBody.YearsScope; i++ {
+		currentYear := time.Now().UTC()
+		yearBridges, err := bridgesByYear(
+			currentYear.AddDate(i, 0, 0),
+			4,
+			reqBody.DayOfHolidays,
+			reqBody.City,
+			reqBody.DaysOff,
+		)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-
-		logger := glogger.Get(req.Context())
-
-		if reqBody.YearsScope == 0 {
-			reqBody.YearsScope = 3
-		}
-		for i := 0; i < reqBody.YearsScope; i++ {
-			currentYear := time.Now().UTC()
-			yearBridges, err := bridgesByYear(
-				currentYear.AddDate(i, 0, 0),
-				4,
-				reqBody.DayOfHolidays,
-				reqBody.City,
-				reqBody.DaysOff,
-			)
-
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			responseBody = append(responseBody, yearBridges)
-		}
-
-		writeResponse(logger, w, 200, responseBody)
+		responseBody = append(responseBody, yearBridges)
 	}
+
+	writeResponse(logger, w, 200, responseBody)
 }
 
 func bridgesByYear(date time.Time, maxHolidaysDistance int, maxAvailability int, city string, daysOff []int) (bridges.YearBridges, error) {
@@ -85,15 +83,14 @@ func bridgesByYear(date time.Time, maxHolidaysDistance int, maxAvailability int,
 	}
 	startDate := time.Date(date.Year(), 1, 1, 0, 0, 0, 0, time.UTC)
 	var currentDate = startDate
-	helpers.IsHolidays(currentDate, daysOffMap, "IT", city)
+	var isHolidays = helpers.HolidaysUtils(currentDate.Year(), daysOffMap, "IT", city)
 
 	var scoreMap = map[int][]bridges.Bridge{}
 	var topBridges, goodBridges int
 	var calculatedBridges []bridges.Bridge
 
 	for !currentDate.UTC().Equal(time.Date(date.Year(), 12, 31, 0, 0, 0, 0, time.UTC)) {
-		isCurrentDateHolidays := helpers.IsHolidays(currentDate, daysOffMap, "IT", city)
-
+		isCurrentDateHolidays := isHolidays(currentDate)
 		availableDays := (map[bool]int{true: maxAvailability, false: maxAvailability - 1})[isCurrentDateHolidays]
 		if maxAvailability == 0 && !isCurrentDateHolidays {
 			currentDate = currentDate.AddDate(0, 0, 1)
@@ -108,10 +105,9 @@ func bridgesByYear(date time.Time, maxHolidaysDistance int, maxAvailability int,
 			DaysCount:     1,
 		}
 		nextDate := currentDate
-
-		for availableDays > 0 || helpers.IsHolidays(nextDate.AddDate(0, 0, 1), daysOffMap, "IT", city) {
-			nextDate = nextDate.AddDate(0, 0, 1)
-			isNextDateHolidays := helpers.IsHolidays(nextDate, daysOffMap, "IT", city)
+		nextDate = nextDate.AddDate(0, 0, 1)
+		for availableDays > 0 || isHolidays(nextDate) {
+			isNextDateHolidays := isHolidays(nextDate)
 
 			if isNextDateHolidays {
 				currentBridge.HolidaysCount++
@@ -119,8 +115,13 @@ func bridgesByYear(date time.Time, maxHolidaysDistance int, maxAvailability int,
 				currentBridge.WeekdaysCount++
 				availableDays -= 1
 			}
+
 			currentBridge.End = nextDate
 			currentBridge.DaysCount++
+			nextDate = nextDate.AddDate(0, 0, 1)
+			if nextDate.Year() != currentDate.Year() {
+				isHolidays = helpers.HolidaysUtils(nextDate.Year(), daysOffMap, "IT", city)
+			}
 		}
 		currentDate = currentDate.AddDate(0, 0, 1)
 
