@@ -28,6 +28,7 @@ type EnvironmentVariables struct {
 	ServicePrefix        string
 	ServiceVersion       string
 	DelayShutdownSeconds int
+	LanguagePackFilePath string
 }
 
 var envVariablesConfig = []configlib.EnvConfig{
@@ -53,5 +54,10 @@ var envVariablesConfig = []configlib.EnvConfig{
 		Key:          "DELAY_SHUTDOWN_SECONDS",
 		Variable:     "DelayShutdownSeconds",
 		DefaultValue: "10",
+	},
+	{
+		Key:          "LANGUAGE_PACK_FILE_PATH",
+		Variable:     "LanguagePackFilePath",
+		DefaultValue: "./",
 	},
 }
