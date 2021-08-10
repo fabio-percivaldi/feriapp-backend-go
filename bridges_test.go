@@ -16,7 +16,7 @@ import (
 )
 
 func TestBridgesRoutes(testCase *testing.T) {
-	os.Setenv("LANGUAGE_PACK_FILE_PATH", "./")
+	os.Setenv("LANGUAGE_PACK_FILE_PATH", "./helpers/")
 
 	testRouter := mux.NewRouter()
 	setupBridgesRouter(testRouter)
@@ -140,7 +140,7 @@ func TestBridgesByYear(testCase *testing.T) {
 		expectedResponse, _ := json.Marshal(YearBridges)
 
 		result, err := bridgesByYear(
-			time.Date(2019, 1, 1, 0, 0, 0, 0, time.UTC),
+			time.Date(2019, 4, 19, 0, 0, 0, 0, time.UTC),
 			4,
 			2,
 			"Milano",
@@ -150,6 +150,7 @@ func TestBridgesByYear(testCase *testing.T) {
 		require.Equal(t, nil, err)
 
 		actualResponse, _ := json.Marshal(result)
+		require.Equal(t, len(bridgesArray), len(result.Bridges), "The 2019 bridges should be %v", len(bridgesArray))
 		require.Equal(t, string(expectedResponse), string(actualResponse), "The 2019 bridges should be correctly calculated")
 	})
 

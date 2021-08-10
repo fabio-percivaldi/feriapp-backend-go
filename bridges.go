@@ -126,7 +126,9 @@ func bridgesByYear(date time.Time, maxHolidaysDistance int, maxAvailability int,
 		currentDate = currentDate.AddDate(0, 0, 1)
 
 		score := getBridgeScore(currentBridge)
-		if currentBridge.DaysCount > len(daysOff) {
+		// the bridge is inserted only if it is longer than daysOff (es: exlude weekend bridges)
+		// and if it is not in the past for more than maxAvailability days
+		if currentBridge.DaysCount > len(daysOff) && currentBridge.Start.Before(time.Now().UTC().AddDate(0, 0, maxAvailability)) {
 			scoreMap[int(score)] = append(scoreMap[int(score)], currentBridge)
 		}
 	}
