@@ -38,10 +38,15 @@ func getHolidays(year int, locale string, city string) []time.Time {
 			localCityHoliday = localHoliday
 		}
 	}
-
+	easterDate, err := CatholicByYear(year)
+	if err != nil {
+		fmt.Printf("error calculating easter")
+	}
 	switch locale {
 	case "IT":
 		holidays = []time.Time{
+			easterDate,
+			easterDate.AddDate(0, 0, 1),
 			time.Date(year, 1, 1, 0, 0, 0, 0, time.UTC),
 			time.Date(year, 1, 6, 0, 0, 0, 0, time.UTC),
 			time.Date(year, 4, 25, 0, 0, 0, 0, time.UTC),

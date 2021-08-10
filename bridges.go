@@ -126,8 +126,9 @@ func bridgesByYear(date time.Time, maxHolidaysDistance int, maxAvailability int,
 		currentDate = currentDate.AddDate(0, 0, 1)
 
 		score := getBridgeScore(currentBridge)
-
-		scoreMap[int(score)] = append(scoreMap[int(score)], currentBridge)
+		if currentBridge.DaysCount > len(daysOff) {
+			scoreMap[int(score)] = append(scoreMap[int(score)], currentBridge)
+		}
 	}
 	topBridges = 0
 	goodBridges = 0
@@ -141,12 +142,11 @@ func bridgesByYear(date time.Time, maxHolidaysDistance int, maxAvailability int,
 			}
 		}
 	}
-	if maxAvailability == 0 {
-		calculatedBridges = scoreMap[topBridges]
-	} else {
-		calculatedBridges = append(scoreMap[topBridges], scoreMap[goodBridges]...)
-
-	}
+	// if maxAvailability == 0 {
+	// 	calculatedBridges = scoreMap[topBridges]
+	// } else {
+	calculatedBridges = append(scoreMap[topBridges], scoreMap[goodBridges]...)
+	// }
 	return bridges.YearBridges{
 		Years:         []string{strconv.FormatInt(int64(date.Year()), 10)},
 		Bridges:       calculatedBridges,
