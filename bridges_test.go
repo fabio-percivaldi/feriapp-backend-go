@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 	"time"
 
@@ -15,6 +16,8 @@ import (
 )
 
 func TestBridgesRoutes(testCase *testing.T) {
+	os.Setenv("LANGUAGE_PACK_FILE_PATH", "./")
+
 	testRouter := mux.NewRouter()
 	setupBridgesRouter(testRouter)
 
@@ -102,6 +105,8 @@ func TestBridgesRoutes(testCase *testing.T) {
 }
 
 func TestBridgesByYear(testCase *testing.T) {
+	os.Setenv("LANGUAGE_PACK_FILE_PATH", "./helpers/")
+
 	testCase.Run("bridgesByYear", func(t *testing.T) {
 		bridgesArray := []bridges.Bridge{
 			{Start: time.Date(2019, 4, 20, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 4, 25, 0, 0, 0, 0, time.UTC), HolidaysCount: 4, WeekdaysCount: 2, DaysCount: 6},

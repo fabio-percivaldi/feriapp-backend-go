@@ -78,19 +78,15 @@ func getHolidays(year int, locale string, city string) []time.Time {
 }
 
 func readFile(locale string) []Holiday {
-	jsonFile, err := os.Open(fmt.Sprintf("%shelpers/%s.json", os.Getenv("LANGUAGE_PACK_FILE_PATH"), locale))
-	// if we os.Open returns an error then handle it
+	jsonFile, err := os.Open(fmt.Sprintf("%s%s.json", os.Getenv("LANGUAGE_PACK_FILE_PATH"), locale))
 	if err != nil {
 		fmt.Println(err)
 		return []Holiday{}
 	}
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
-	// we initialize our Users array
 	var holidays []Holiday
 
-	// we unmarshal our byteArray which contains our
-	// jsonFile's content into 'users' which we defined above
 	json.Unmarshal(byteValue, &holidays)
 
 	return holidays
