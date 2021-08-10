@@ -65,7 +65,13 @@ func createBridges(w http.ResponseWriter, req *http.Request) {
 			reqBody.City,
 			reqBody.DaysOff,
 		)
-
+		filteredBridges := []bridges.Bridge{}
+		for _, bridge := range yearBridges.Bridges {
+			if bridge.Start.After(time.Now().UTC().AddDate(0, 0, reqBody.DayOfHolidays)) {
+				filteredBridges = append(filteredBridges, bridge)
+			}
+		}
+		yearBridges.Bridges = filteredBridges
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -128,7 +134,7 @@ func bridgesByYear(date time.Time, maxHolidaysDistance int, maxAvailability int,
 		score := getBridgeScore(currentBridge)
 		// the bridge is inserted only if it is longer than daysOff (es: exlude weekend bridges)
 		// and if it is not in the past for more than maxAvailability days
-		if currentBridge.DaysCount > len(daysOff) && currentBridge.Start.Before(time.Now().UTC().AddDate(0, 0, maxAvailability)) {
+		if currentBridge.DaysCount > len(daysOff) {
 			scoreMap[int(score)] = append(scoreMap[int(score)], currentBridge)
 		}
 	}
