@@ -64,12 +64,12 @@ func getHolidays(year int, locale string, city string) []time.Time {
 	splittedDate := strings.Split(localCityHoliday.Date, "-")
 	month, montErr := strconv.Atoi(splittedDate[0])
 	if montErr != nil {
-		fmt.Println("error parsing local city holiday month")
+		fmt.Printf("error parsing local city holiday month: %s\n", splittedDate[0])
 		return holidays
 	}
 	day, dayErr := strconv.Atoi(splittedDate[1])
 	if dayErr != nil {
-		fmt.Println("error parsing local city holiday day")
+		fmt.Printf("error parsing local city holiday day: %s\n", splittedDate[1])
 		return holidays
 	}
 	localCityHolidayDate := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
@@ -82,6 +82,7 @@ func readFile(locale string) []Holiday {
 	// if we os.Open returns an error then handle it
 	if err != nil {
 		fmt.Println(err)
+		return []Holiday{}
 	}
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 
