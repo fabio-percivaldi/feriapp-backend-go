@@ -13,11 +13,14 @@ type Bridge struct {
 }
 
 type YearBridges struct {
-	Years         []string `json:"years" bson:"years"`
-	Bridges       []Bridge `json:"bridges" bson:"bridges"`
-	HolidaysCount int      `json:"holidaysCount" bson:"holidaysCount"`
-	WeekdaysCount int      `json:"weekdaysCount" bson:"weekdaysCount"`
-	DaysCount     int      `json:"daysCount" bson:"bridges"`
+	Years           []string `json:"years" bson:"years"`
+	Bridges         []Bridge `json:"bridges" bson:"bridges"`
+	HolidaysCount   int      `json:"holidaysCount" bson:"holidaysCount"`
+	WeekdaysCount   int      `json:"weekdaysCount" bson:"weekdaysCount"`
+	DaysCount       int      `json:"daysCount" bson:"bridges"`
+	TopBridges      int
+	GoodBridges     int
+	ScoreMapBridges map[int][]Bridge
 }
 type BridgesRequest struct {
 	DayOfHolidays  int              `json:"dayOfHolidays" bson:"dayOfHolidays"`

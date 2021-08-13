@@ -65,6 +65,7 @@ func createBridges(w http.ResponseWriter, req *http.Request) {
 			reqBody.DayOfHolidays,
 			reqBody.City,
 			reqBody.DaysOff,
+			true,
 		)
 		filteredBridges := []bridges.Bridge{}
 		for _, bridge := range yearBridges.Bridges {
@@ -83,27 +84,34 @@ func createBridges(w http.ResponseWriter, req *http.Request) {
 	writeResponse(logger, w, 200, responseBody)
 }
 
-func bridgesByYear(date time.Time, maxHolidaysDistance int, maxAvailability int, city string, daysOff []int) (bridges.YearBridges, error) {
+func bridgesByYear(date time.Time, maxHolidaysDistance int, maxAvailability int, city string, daysOff []int, skipPastBridges bool) (bridges.YearBridges, error) {
 	var daysOffMap = make(map[int]bool)
 	for i := 0; i < len(daysOff); i += 1 {
 		daysOffMap[daysOff[i]] = true
 	}
 	startDate := time.Date(date.Year(), 1, 1, 0, 0, 0, 0, time.UTC)
 	var currentDate = startDate
+
 	var isHolidays = helpers.HolidaysUtils(currentDate.Year(), daysOffMap, "IT", city)
 
 	var scoreMap = map[int][]bridges.Bridge{}
 	var topBridges, goodBridges int
 	var calculatedBridges []bridges.Bridge
 
-	for !currentDate.UTC().Equal(time.Date(date.Year(), 12, 31, 0, 0, 0, 0, time.UTC)) {
+	for !currentDate.UTC().After(time.Date(date.Year(), 12, 31, 0, 0, 0, 0, time.UTC)) {
+
 		isCurrentDateHolidays := isHolidays(currentDate)
 		availableDays := (map[bool]int{true: maxAvailability, false: maxAvailability - 1})[isCurrentDateHolidays]
+		// if no more days off are left and today is not holiday the bridge is closed
 		if maxAvailability == 0 && !isCurrentDateHolidays {
 			currentDate = currentDate.AddDate(0, 0, 1)
 			continue
 		}
-
+		// if skipPastBridges is true only bridges that happens after today - maxAvailability day will be returned
+		if currentDate.Before(time.Now().AddDate(0, 0, -(maxAvailability+1))) && skipPastBridges {
+			currentDate = currentDate.AddDate(0, 0, 1)
+			continue
+		}
 		currentBridge := bridges.Bridge{
 			Start:         currentDate,
 			End:           currentDate,
@@ -111,8 +119,15 @@ func bridgesByYear(date time.Time, maxHolidaysDistance int, maxAvailability int,
 			WeekdaysCount: (map[bool]int{true: 0, false: 1})[isCurrentDateHolidays],
 			DaysCount:     1,
 		}
+
 		nextDate := currentDate
 		nextDate = nextDate.AddDate(0, 0, 1)
+		// a bridge should always start with an holiday
+		if currentBridge.DaysCount == 1 && !isCurrentDateHolidays {
+			currentDate = currentDate.AddDate(0, 0, 1)
+			continue
+		}
+
 		for availableDays > 0 || isHolidays(nextDate) {
 			isNextDateHolidays := isHolidays(nextDate)
 
@@ -130,7 +145,9 @@ func bridgesByYear(date time.Time, maxHolidaysDistance int, maxAvailability int,
 				isHolidays = helpers.HolidaysUtils(nextDate.Year(), daysOffMap, "IT", city)
 			}
 		}
-		currentDate = currentDate.AddDate(0, 0, 1)
+		for isHolidays(currentDate) {
+			currentDate = currentDate.AddDate(0, 0, 1)
+		}
 
 		score := getBridgeScore(currentBridge)
 		// the bridge is inserted only if it is longer than daysOff (es: exlude weekend bridges)
