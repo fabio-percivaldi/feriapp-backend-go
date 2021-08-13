@@ -109,25 +109,25 @@ func TestBridgesByYear(testCase *testing.T) {
 
 	testCase.Run("bridgesByYear", func(t *testing.T) {
 		bridgesArray := []bridges.Bridge{
-			{Start: time.Date(2019, 4, 20, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 4, 25, 0, 0, 0, 0, time.UTC), HolidaysCount: 4, WeekdaysCount: 2, DaysCount: 6},
-			{Start: time.Date(2019, 12, 21, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 12, 26, 0, 0, 0, 0, time.UTC), HolidaysCount: 4, WeekdaysCount: 2, DaysCount: 6},
-			{Start: time.Date(2019, 12, 24, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 12, 29, 0, 0, 0, 0, time.UTC), HolidaysCount: 4, WeekdaysCount: 2, DaysCount: 6},
-			{Start: time.Date(2019, 12, 25, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 12, 30, 0, 0, 0, 0, time.UTC), HolidaysCount: 4, WeekdaysCount: 2, DaysCount: 6},
-			{Start: time.Date(2019, 4, 18, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 4, 22, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
-			{Start: time.Date(2019, 4, 19, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 4, 23, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
-			{Start: time.Date(2019, 4, 21, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 4, 25, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
-			{Start: time.Date(2019, 4, 24, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 4, 28, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
-			{Start: time.Date(2019, 4, 25, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 4, 29, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
-			{Start: time.Date(2019, 4, 27, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 5, 1, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
-			{Start: time.Date(2019, 5, 1, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 5, 5, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
-			{Start: time.Date(2019, 8, 14, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 8, 18, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
-			{Start: time.Date(2019, 8, 15, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 8, 19, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
-			{Start: time.Date(2019, 10, 30, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 11, 3, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
-			{Start: time.Date(2019, 10, 31, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 11, 4, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
-			{Start: time.Date(2019, 11, 1, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 11, 5, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
-			{Start: time.Date(2019, 12, 22, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 12, 26, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
-			{Start: time.Date(2019, 12, 26, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 12, 30, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
-			{Start: time.Date(2019, 12, 28, 0, 0, 0, 0, time.UTC), End: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
+			{Id: "2019-04-20-2019-04-25", IsTop: true, Start: time.Date(2019, 4, 20, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 4, 25, 0, 0, 0, 0, time.UTC), HolidaysCount: 4, WeekdaysCount: 2, DaysCount: 6},
+			{Id: "2019-12-21-2019-12-26", IsTop: true, Start: time.Date(2019, 12, 21, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 12, 26, 0, 0, 0, 0, time.UTC), HolidaysCount: 4, WeekdaysCount: 2, DaysCount: 6},
+			{Id: "2019-12-24-2019-12-29", IsTop: true, Start: time.Date(2019, 12, 24, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 12, 29, 0, 0, 0, 0, time.UTC), HolidaysCount: 4, WeekdaysCount: 2, DaysCount: 6},
+			{Id: "2019-12-25-2019-12-30", IsTop: true, Start: time.Date(2019, 12, 25, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 12, 30, 0, 0, 0, 0, time.UTC), HolidaysCount: 4, WeekdaysCount: 2, DaysCount: 6},
+			{Id: "2019-04-18-2019-04-22", IsTop: false, Start: time.Date(2019, 4, 18, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 4, 22, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
+			{Id: "2019-04-19-2019-04-23", IsTop: false, Start: time.Date(2019, 4, 19, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 4, 23, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
+			{Id: "2019-04-21-2019-04-25", IsTop: false, Start: time.Date(2019, 4, 21, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 4, 25, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
+			{Id: "2019-04-24-2019-04-28", IsTop: false, Start: time.Date(2019, 4, 24, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 4, 28, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
+			{Id: "2019-04-25-2019-04-29", IsTop: false, Start: time.Date(2019, 4, 25, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 4, 29, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
+			{Id: "2019-04-27-2019-05-01", IsTop: false, Start: time.Date(2019, 4, 27, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 5, 1, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
+			{Id: "2019-05-01-2019-05-05", IsTop: false, Start: time.Date(2019, 5, 1, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 5, 5, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
+			{Id: "2019-08-14-2019-08-18", IsTop: false, Start: time.Date(2019, 8, 14, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 8, 18, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
+			{Id: "2019-08-15-2019-08-19", IsTop: false, Start: time.Date(2019, 8, 15, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 8, 19, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
+			{Id: "2019-10-30-2019-11-03", IsTop: false, Start: time.Date(2019, 10, 30, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 11, 3, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
+			{Id: "2019-10-31-2019-11-04", IsTop: false, Start: time.Date(2019, 10, 31, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 11, 4, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
+			{Id: "2019-11-01-2019-11-05", IsTop: false, Start: time.Date(2019, 11, 1, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 11, 5, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
+			{Id: "2019-12-22-2019-12-26", IsTop: false, Start: time.Date(2019, 12, 22, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 12, 26, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
+			{Id: "2019-12-26-2019-12-30", IsTop: false, Start: time.Date(2019, 12, 26, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 12, 30, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
+			{Id: "2019-12-28-2020-01-01", IsTop: false, Start: time.Date(2019, 12, 28, 0, 0, 0, 0, time.UTC), End: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 2, DaysCount: 5},
 		}
 		YearBridges := bridges.YearBridges{
 			Years:         []string{"2019"},
@@ -156,8 +156,8 @@ func TestBridgesByYear(testCase *testing.T) {
 
 	testCase.Run("bridgesByYear - max availability = 0", func(t *testing.T) {
 		bridgesArray := []bridges.Bridge{
-			{Start: time.Date(2019, 4, 20, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 4, 22, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 0, DaysCount: 3},
-			{Start: time.Date(2019, 11, 1, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 11, 3, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 0, DaysCount: 3},
+			{Id: "2019-04-20-2019-04-22", IsTop: true, Start: time.Date(2019, 4, 20, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 4, 22, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 0, DaysCount: 3},
+			{Id: "2019-11-01-2019-11-03", IsTop: true, Start: time.Date(2019, 11, 1, 0, 0, 0, 0, time.UTC), End: time.Date(2019, 11, 3, 0, 0, 0, 0, time.UTC), HolidaysCount: 3, WeekdaysCount: 0, DaysCount: 3},
 		}
 		YearBridges := bridges.YearBridges{
 			Years:         []string{"2019"},

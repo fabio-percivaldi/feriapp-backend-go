@@ -8,6 +8,8 @@ type Bridge struct {
 	HolidaysCount int       `json:"holidaysCount" bson:"holidaysCount"`
 	WeekdaysCount int       `json:"weekdaysCount" bson:"weekdaysCount"`
 	DaysCount     int       `json:"daysCount" bson:"daysCount"`
+	IsTop         bool      `json:"isTop" bson:"isTop"`
+	Id            string    `json:"id" bson:"id"`
 }
 
 type YearBridges struct {

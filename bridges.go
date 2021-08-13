@@ -21,6 +21,7 @@ import (
 	"errors"
 	"feriapp-backend-go/bridges"
 	"feriapp-backend-go/helpers"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -134,6 +135,8 @@ func bridgesByYear(date time.Time, maxHolidaysDistance int, maxAvailability int,
 		score := getBridgeScore(currentBridge)
 		// the bridge is inserted only if it is longer than daysOff (es: exlude weekend bridges)
 		// and if it is not in the past for more than maxAvailability days
+		currentBridge.Id = fmt.Sprintf("%s-%s", currentBridge.Start.Format("2006-01-02"), currentBridge.End.Format("2006-01-02"))
+
 		if currentBridge.DaysCount > len(daysOff) {
 			scoreMap[int(score)] = append(scoreMap[int(score)], currentBridge)
 		}
@@ -150,11 +153,13 @@ func bridgesByYear(date time.Time, maxHolidaysDistance int, maxAvailability int,
 			}
 		}
 	}
-	// if maxAvailability == 0 {
-	// 	calculatedBridges = scoreMap[topBridges]
-	// } else {
+
+	for index := range scoreMap[topBridges] {
+		scoreMap[topBridges][index].IsTop = true
+	}
+
 	calculatedBridges = append(scoreMap[topBridges], scoreMap[goodBridges]...)
-	// }
+
 	return bridges.YearBridges{
 		Years:         []string{strconv.FormatInt(int64(date.Year()), 10)},
 		Bridges:       calculatedBridges,
